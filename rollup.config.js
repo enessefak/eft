@@ -98,7 +98,7 @@ export default {
   external: isProd && ['react', 'react-dom', 'prop-types', 'styled-components'],
   output: {
     name,
-    file: 'dist/app.js',
+    file: 'public/dist/app.js',
     format: 'iife',
     globals: {
       react: 'React',
@@ -134,7 +134,7 @@ export default {
     }),
     isProd && visualizer(),
     isProd && uglify(),
-    !isProd && browsersync({ server: 'dist', files: 'dist/app.js' })
+    !isProd && browsersync({ server: 'public', files: 'public/dist/app.js' })
   ],
   watch: {
     exclude: 'node_modules/**',
