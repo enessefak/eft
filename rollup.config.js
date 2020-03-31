@@ -6,8 +6,11 @@ import babel from 'rollup-plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import alias from '@rollup/plugin-alias'
-import { terser } from 'rollup-plugin-terser'
 import browsersync from 'rollup-plugin-browsersync'
+import visualizer from 'rollup-plugin-visualizer'
+import filesize from 'rollup-plugin-filesize'
+import progress from 'rollup-plugin-progress'
+import { uglify } from 'rollup-plugin-uglify'
 import { name } from './package.json'
 
 const isProd = process.env.BUILD === 'production'
@@ -92,7 +95,7 @@ const reactIsNamedExports = [
 
 export default {
   input: 'src/entry.tsx',
-  external: isProd && ['react', 'react-dom', 'prop-types'],
+  external: ['react', 'react-dom', 'prop-types', 'styled-components'],
   output: {
     name,
     file: 'dist/app.js',
@@ -100,16 +103,15 @@ export default {
     globals: {
       react: 'React',
       'react-dom': 'ReactDOM',
-      'prop-types': 'PropTypes'
+      'prop-types': 'PropTypes',
+      'styled-components': 'styled'
     }
   },
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
     }),
-    resolve({
-      browser: true
-    }),
+    resolve(),
     commonjs({
       include: 'node_modules/**',
       namedExports: {
@@ -122,11 +124,16 @@ export default {
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       exclude: 'node_modules/**'
     }),
+    filesize(),
     typescript(),
     alias({
       entries: [{ find: 'components', replacement: path.join(__dirname, 'src/components') }]
     }),
-    isProd && terser(),
+    progress({
+      clearLine: false
+    }),
+    isProd && visualizer(),
+    isProd && uglify(),
     !isProd && browsersync({ server: 'dist', files: 'dist/app.js' })
   ],
   watch: {
