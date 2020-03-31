@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rollup -c --environment BUILD:production",
-    "watch": "rollup -cw --environment BUILD:development"
+    "dev": "rollup -cw --environment BUILD:development"
   },
   "dependencies": {
     "react": "^16.13.1",

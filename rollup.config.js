@@ -95,7 +95,7 @@ const reactIsNamedExports = [
 
 export default {
   input: 'src/entry.tsx',
-  external: ['react', 'react-dom', 'prop-types', 'styled-components'],
+  external: isProd && ['react', 'react-dom', 'prop-types', 'styled-components'],
   output: {
     name,
     file: 'dist/app.js',

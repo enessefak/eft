@@ -3,8 +3,7 @@
     [
       "@babel/preset-env",
       {
-        "modules": false,
-        "debug": true
+        "modules": false
       }
     ],
     "@babel/preset-react"
