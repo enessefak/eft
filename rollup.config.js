@@ -93,7 +93,14 @@ const reactIsNamedExports = [
   'typeOf'
 ]
 
-export default {
+const commonPlugins = [
+  babel({
+    extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+    exclude: 'node_modules/**'
+  })
+]
+
+const clientConfig = {
   input: 'src/entry.tsx',
   external: isProd && ['react', 'react-dom', 'prop-types', 'styled-components'],
   output: {
@@ -108,6 +115,7 @@ export default {
     }
   },
   plugins: [
+    ...commonPlugins,
     replace({
       'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
     }),
@@ -119,10 +127,6 @@ export default {
         'react-dom': reactDOMNamedExports,
         'react-is': reactIsNamedExports
       }
-    }),
-    babel({
-      extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
-      exclude: 'node_modules/**'
     }),
     filesize(),
     typescript(),
@@ -141,3 +145,14 @@ export default {
     include: 'src/**'
   }
 }
+
+const ssrConfig = {
+  input: 'src/app.tsx',
+  output: {
+    file: 'public/dist/app.cjs.js',
+    format: 'cjs'
+  },
+  plugins: [...commonPlugins, typescript({ module: 'commonjs', jsx: 'react' })]
+}
+
+export default [clientConfig, ssrConfig]
