@@ -9,7 +9,7 @@ const Wrapper = styled.section`
 const App = ({ state }) => {
   return (
     <Wrapper>
-      <p>It, deneme</p>
+      <p>It, work</p>
       <p>{state.text}</p>
     </Wrapper>
   )

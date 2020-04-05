@@ -10,15 +10,6 @@
   ],
   "plugins": [
     [
-      "babel-plugin-styled-components",
-      {
-        "ssr": true,
-        "displayName": true,
-        "fileName": true,
-        "preprocess": false
-      }
-    ],
-    [
       "@babel/plugin-proposal-class-properties",
       {
         "loose": true
