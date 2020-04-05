@@ -32278,11 +32278,11 @@
 	  window['__styled-components-init__'] += 1;
 	}
 
-	var Wrapper = styled.section(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  padding: 4em;\n  background: papayawhip;\n"], ["\n  padding: 4em;\n  background: papayawhip;\n"])));
+	var Wrapper = styled.section(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  padding: 10em;\n  background: papayawhip;\n"], ["\n  padding: 10em;\n  background: papayawhip;\n"])));
 
 	var App = function App(_a) {
 	  var state = _a.state;
-	  return /*#__PURE__*/react.createElement(Wrapper, null, /*#__PURE__*/react.createElement("p", null, "It, deneme"), /*#__PURE__*/react.createElement("p", null, state.text));
+	  return /*#__PURE__*/react.createElement(Wrapper, null, /*#__PURE__*/react.createElement("p", null, "It, work"), /*#__PURE__*/react.createElement("p", null, state.text));
 	};
 	var templateObject_1;
 

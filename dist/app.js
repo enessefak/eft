@@ -210,10 +210,10 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
     }
     privateMap.set(receiver, value);
     return value;
-}var Wrapper = styled.section(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  padding: 4em;\n  background: papayawhip;\n"], ["\n  padding: 4em;\n  background: papayawhip;\n"])));
+}var Wrapper = styled.section(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  padding: 10em;\n  background: papayawhip;\n"], ["\n  padding: 10em;\n  background: papayawhip;\n"])));
 
 var App = function App(_a) {
   var state = _a.state;
-  return /*#__PURE__*/React.createElement(Wrapper, null, /*#__PURE__*/React.createElement("p", null, "It, deneme"), /*#__PURE__*/React.createElement("p", null, state.text));
+  return /*#__PURE__*/React.createElement(Wrapper, null, /*#__PURE__*/React.createElement("p", null, "It, work"), /*#__PURE__*/React.createElement("p", null, state.text));
 };
 var templateObject_1;module.exports=App;

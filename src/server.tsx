@@ -1,12 +1,14 @@
 import path from 'path'
+import http from 'http'
 import express from 'express'
+import reload from 'reload'
 import reactDom from 'react-dom/server'
 import React from 'react'
 import { ServerStyleSheet } from 'styled-components'
 import pkg from '../package.json'
 
 const app = express()
-const port = 81
+const port = process.env.PORT || 81
 
 const GLOBAL_STATE = {
   text: 'Deneme'
@@ -28,6 +30,7 @@ const layout = {
     <div id="root">`,
   foot: `</div>
   <script src="${pkg.name}.js"></script>
+  <script src="/reload/reload.js"></script> 
 </body>
 
 </html>
@@ -62,4 +65,20 @@ app.get('/', (req, res) => {
   })
 })
 
-app.listen(port, () => console.log(`${pkg.name} app listening on port ${port}!`))
+const httpServer = http.createServer(app)
+
+const run = async bundler => {
+  try {
+    const reloadedServer = await reload(app)
+
+    bundler(reloadedServer.reload)
+
+    httpServer.listen(port, function () {
+      console.info(`Web server listening on port ${port}`)
+    })
+  } catch (err) {
+    console.error('Reload could not start, could not start server/sample app deneme', err)
+  }
+}
+
+export default run
