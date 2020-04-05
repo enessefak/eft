@@ -1,5 +1,6 @@
 import path from 'path'
 import http from 'http'
+import compression from 'compression'
 import express from 'express'
 import reload from 'reload'
 import reactDom from 'react-dom/server'
@@ -39,6 +40,8 @@ const layout = {
 }
 
 app.use(express.static(path.resolve(__dirname, 'public')))
+
+app.use(compression())
 
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8')

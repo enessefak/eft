@@ -207,7 +207,7 @@ const runServer = () => ({
 const serverConfig = {
   ...commonOptions,
   input: 'src/server.tsx',
-  external: [...commonExternal, 'react-dom/server', 'express', 'path', 'http', 'reload', './app'],
+  external: [...commonExternal, 'react-dom/server', 'express', 'path', 'http', 'reload', 'compression', './app'],
   output: { file: 'dist/server.js', format: 'cjs', compact: true, plugins: [runServer()] },
   plugins: [
     typescript({
