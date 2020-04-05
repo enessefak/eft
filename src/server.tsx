@@ -9,6 +9,7 @@ import pkg from '../package.json'
 
 const app = express()
 const port = process.env.PORT || 81
+let isRunningServer = false
 
 const GLOBAL_STATE = {
   text: 'Deneme'
@@ -69,13 +70,16 @@ const httpServer = http.createServer(app)
 
 const run = async bundler => {
   try {
-    const reloadedServer = await reload(app)
+    if (!isRunningServer) {
+      isRunningServer = true
+      const reloadedServer = await reload(app)
 
-    bundler(reloadedServer.reload)
+      bundler(reloadedServer.reload)
 
-    httpServer.listen(port, function () {
-      console.info(`Web server listening on port ${port}`)
-    })
+      httpServer.listen(port, function () {
+        console.info(`Web server listening on port ${port}`)
+      })
+    }
   } catch (err) {
     console.error('Reload could not start, could not start server/sample app deneme', err)
   }
