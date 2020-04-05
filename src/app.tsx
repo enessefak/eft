@@ -6,8 +6,13 @@ const Wrapper = styled.section`
   background: papayawhip;
 `
 
-const App = () => {
-  return <Wrapper>It, work styled component</Wrapper>
+const App = ({ state }) => {
+  return (
+    <Wrapper>
+      <p>It, work</p>
+      <p>{state.text}</p>
+    </Wrapper>
+  )
 }
 
 export default App
