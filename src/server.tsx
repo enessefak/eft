@@ -81,7 +81,7 @@ const run = async bundler => {
       })
     }
   } catch (err) {
-    console.error('Reload could not start, could not start server/sample app deneme', err)
+    console.error(`Reload could not start, could not start server/sample app ${pkg.name}`, err)
   }
 }
 
