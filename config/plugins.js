@@ -2,14 +2,7 @@
 
 const path = require('path')
 const fs = require('fs')
-const {
-  isProd,
-  extensions,
-  reactNamedExports,
-  reactDOMNamedExports,
-  reactIsNamedExports,
-  eventEmitter
-} = require('./utils')
+const { isProd, extensions, reactNamedExports, reactDOMNamedExports, reactIsNamedExports } = require('./utils')
 
 const replace = require('@rollup/plugin-replace')
 const typescript = require('rollup-plugin-typescript2')
