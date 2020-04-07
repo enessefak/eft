@@ -7,6 +7,7 @@
   "author": "enes.sefa.k <enes.sefa.k@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node dist/server.js",
     "build": "rollup -c --environment BUILD:production",
     "dev": "rollup -cw --environment BUILD:development"
   },
@@ -16,6 +17,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.17.1",
+    "lowdb": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reload": "^3.0.4",
@@ -25,6 +27,7 @@
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-syntax-decorators": "^7.8.3",
+    "@babel/plugin-syntax-import-meta": "^7.8.3",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.4",
     "@rollup/plugin-commonjs": "^11.0.2",

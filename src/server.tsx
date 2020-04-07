@@ -39,14 +39,7 @@ const layout = {
 `
 }
 
-app.use(express.static(path.resolve(__dirname, 'public')))
-
-app.use(compression())
-
-app.get('/', (req, res) => {
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Transfer-Encoding', 'chunked')
-
+const renderReact = () => {
   delete require.cache[require.resolve('./app')]
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Application = require('./app')
@@ -55,7 +48,27 @@ app.get('/', (req, res) => {
   const jsx = sheet.collectStyles(<Application state={GLOBAL_STATE} />)
   const bodyStream = sheet.interleaveWithNodeStream(reactDom.renderToNodeStream(jsx))
 
+  return bodyStream
+}
+
+app.use(express.static(path.resolve(__dirname, 'public')))
+
+app.use(compression())
+
+app.get('/json', (req, res) => {
+  res.json({
+    html: '<div />',
+    scripts: `<script>console.log('deneme')</script>`
+  })
+})
+
+app.get('/', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8')
+  res.setHeader('Transfer-Encoding', 'chunked')
+
   res.write(layout.head)
+
+  const bodyStream = renderReact()
 
   bodyStream.on('data', chunk => res.write(chunk))
 
@@ -71,7 +84,7 @@ app.get('/', (req, res) => {
 
 const httpServer = http.createServer(app)
 
-const run = async bundler => {
+export const run = async bundler => {
   try {
     if (!isRunningServer) {
       isRunningServer = true
@@ -88,4 +101,6 @@ const run = async bundler => {
   }
 }
 
-export default run
+export const build = async bundler => {
+  bundler(renderReact)
+}
