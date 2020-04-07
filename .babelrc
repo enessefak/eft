@@ -9,6 +9,7 @@
     "@babel/preset-react"
   ],
   "plugins": [
+    "@babel/plugin-syntax-import-meta",
     [
       "@babel/plugin-proposal-class-properties",
       {
