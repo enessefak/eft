@@ -1,21 +1,32 @@
-import path from 'path'
-import fs from 'fs'
-import { isProd, extensions, reactNamedExports, reactDOMNamedExports, reactIsNamedExports, eventEmitter } from './utils'
+/* eslint-plugin-disable @typescript-eslint */
 
-import replace from '@rollup/plugin-replace'
-import typescript from 'rollup-plugin-typescript2'
-import babel from 'rollup-plugin-babel'
-import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
-import visualizer from 'rollup-plugin-visualizer'
-import filesize from 'rollup-plugin-filesize'
-import progress from 'rollup-plugin-progress'
-import json from '@rollup/plugin-json'
-import { uglify } from 'rollup-plugin-uglify'
+const path = require('path')
+const fs = require('fs')
+const {
+  isProd,
+  extensions,
+  reactNamedExports,
+  reactDOMNamedExports,
+  reactIsNamedExports,
+  eventEmitter
+} = require('./utils')
+
+const replace = require('@rollup/plugin-replace')
+const typescript = require('rollup-plugin-typescript2')
+const babel = require('rollup-plugin-babel')
+const commonjs = require('@rollup/plugin-commonjs')
+const resolve = require('@rollup/plugin-node-resolve')
+const visualizer = require('rollup-plugin-visualizer')
+const filesize = require('rollup-plugin-filesize')
+const progress = require('rollup-plugin-progress')
+const run = require('@rollup/plugin-run')
+const json = require('@rollup/plugin-json')
+const { uglify } = require('rollup-plugin-uglify')
 
 const resolverPlugin = () => ({
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   resolveId(source, importer) {
+    console.log('importer', importer)
     if (/\.(gif|jpe?g|tiff|png|svg|webp|bmp)$/i.test(source)) {
       return path.resolve(path.dirname(importer), source)
     }
@@ -30,18 +41,6 @@ const resolverPlugin = () => ({
       })
       return `export default import.meta.ROLLUP_FILE_URL_${referenceId};`
     }
-  }
-})
-
-const bundleEvent = () => ({
-  name: 'bundle-event',
-  writeBundle: options => {
-    // const bundleServerPath = require.resolve(`./${file}`)
-    // // eslint-disable-next-line @typescript-eslint/no-var-requires
-    // const { run, build } = require(bundleServerPath)
-    // if (!isProd) run(rollupBundler)
-    // else build(rollupBuild)
-    eventEmitter.emit('bundle', options.name)
   }
 })
 
@@ -73,11 +72,10 @@ const commonPlugins = [
     progress({
       clearLine: false
     }),
-  isProd && filesize(),
-  bundleEvent()
+  isProd && filesize()
 ]
 
-export {
+module.exports = {
   replace,
   typescript,
   babel,
@@ -89,5 +87,6 @@ export {
   json,
   uglify,
   resolverPlugin,
+  run,
   commonPlugins
 }

@@ -1,11 +1,12 @@
-import event from 'events'
-import { DEFAULT_EXTENSIONS } from '@babel/core'
+/* eslint-plugin-disable @typescript-eslint */
 
-export * as pkg from '../package.json'
+const { DEFAULT_EXTENSIONS } = require('@babel/core')
 
-export const isProd = process.env.BUILD === 'production'
+const pkg = require('../package.json')
 
-export const reactNamedExports = [
+const isProd = process.env.BUILD === 'production'
+
+const reactNamedExports = [
   'Children',
   'Component',
   'Fragment',
@@ -36,7 +37,7 @@ export const reactNamedExports = [
   'version'
 ]
 
-export const reactDOMNamedExports = [
+const reactDOMNamedExports = [
   '__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED',
   'createPortal',
   'findDOMNode',
@@ -50,7 +51,7 @@ export const reactDOMNamedExports = [
   'version'
 ]
 
-export const reactIsNamedExports = [
+const reactIsNamedExports = [
   'AsyncMode',
   'ConcurrentMode',
   'ContextConsumer',
@@ -81,8 +82,17 @@ export const reactIsNamedExports = [
   'typeOf'
 ]
 
-export const extensions = [...DEFAULT_EXTENSIONS, '.jsx', '.ts', '.tsx', '.png']
+const extensions = [...DEFAULT_EXTENSIONS, '.jsx', '.ts', '.tsx', '.png']
 
-export const commonExternal = ['react', 'react-is', 'styled-components']
+const commonExternal = ['react', 'react-is', 'styled-components']
 
-export const eventEmitter = new event.EventEmitter()
+module.exports = {
+  DEFAULT_EXTENSIONS,
+  pkg,
+  isProd,
+  reactNamedExports,
+  reactDOMNamedExports,
+  reactIsNamedExports,
+  extensions,
+  commonExternal
+}

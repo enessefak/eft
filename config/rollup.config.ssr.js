@@ -1,5 +1,7 @@
-import { commonExternal, isProd } from './utils'
-import { typescript, commonPlugins } from './plugins'
+/* eslint-plugin-disable @typescript-eslint */
+
+const { commonExternal, isProd } = require('./utils')
+const { typescript, commonPlugins } = require('./plugins')
 
 const plugins = [
   typescript({
@@ -9,11 +11,11 @@ const plugins = [
   ...commonPlugins
 ]
 
-const input = 'src/app.tsx'
+const input = 'src/entry.ssr.tsx'
 
-const output = { name: 'ssr', file: 'dist/app.js', format: 'cjs', compact: true }
+const output = { name: 'ssr', file: 'dist/app.js', format: 'cjs', compact: true, sourcemap: !isProd }
 
-const external = [...commonExternal]
+const external = [...commonExternal, 'react-dom/server']
 
 const options = {
   cache: true,
@@ -21,15 +23,28 @@ const options = {
   external
 }
 
-const ssrConfig = {
+const watchOptions = {
   input,
   output,
   plugins,
   ...options,
   watch: {
     exclude: 'node_modules/**',
-    include: 'src/**'
+    include: 'src/**',
+    skipWrite: false
   }
 }
 
-export default ssrConfig
+const rollupInputOptions = {
+  input,
+  ...options,
+  plugins
+}
+
+const rollupOutputOptions = output
+
+module.exports = {
+  watchOptions,
+  rollupInputOptions,
+  rollupOutputOptions
+}

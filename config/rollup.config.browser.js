@@ -1,5 +1,7 @@
-import { pkg, isProd, commonExternal } from './utils'
-import { typescript, replace, visualizer, uglify, commonPlugins } from './plugins'
+/* eslint-plugin-disable @typescript-eslint */
+
+const { pkg, isProd, commonExternal } = require('./utils')
+const { typescript, replace, visualizer, uglify, commonPlugins } = require('./plugins')
 
 const plugins = [
   typescript({ check: isProd }),
@@ -34,7 +36,7 @@ const options = {
   external
 }
 
-const clientConfig = {
+const watchOptions = {
   input,
   output,
   plugins,
@@ -45,4 +47,16 @@ const clientConfig = {
   }
 }
 
-export default clientConfig
+const rollupInputOptions = {
+  input,
+  ...options,
+  plugins
+}
+
+const rollupOutputOptions = output
+
+module.exports = {
+  watchOptions,
+  rollupInputOptions,
+  rollupOutputOptions
+}

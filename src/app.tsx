@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import imgSource from './deneme.png'
-import imgSource2 from './deneme.jpg'
+import imgSource from './assets/deneme.png'
+import imgSource2 from './assets/deneme.jpg'
 
 const Wrapper = styled.section`
   padding: 4em;

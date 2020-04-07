@@ -1,19 +1,25 @@
-import { commonExternal, isProd } from './utils'
-import { typescript, commonPlugins } from './plugins'
+/* eslint-plugin-disable @typescript-eslint */
+
+const { commonExternal, isProd } = require('./utils')
+const { typescript, run, commonPlugins } = require('./plugins')
 
 const plugins = [
   typescript({
     check: isProd,
     tsconfigOverride: { module: 'commonjs', jsx: 'react' }
   }),
-  ...commonPlugins
+  ...commonPlugins,
+  !isProd &&
+    run({
+      execArgv: ['-r', 'source-map-support/register']
+    })
 ]
 
-const input = 'src/server.tsx'
+const input = isProd ? 'src/server/prod.server' : 'src/server/dev.server'
 
-const output = { name: 'server', file: 'dist/server.js', format: 'cjs', compact: true }
+const output = { name: 'server', file: 'dist/server.js', format: 'cjs', compact: true, sourcemap: !isProd }
 
-const external = [...commonExternal, 'react-dom/server', 'express', 'path', 'http', 'reload', 'compression', './app']
+const external = [...commonExternal, './app', 'express', 'fs', 'path', 'http', 'reload', 'compression']
 
 const options = {
   cache: true,
@@ -21,7 +27,7 @@ const options = {
   external
 }
 
-const serverConfig = {
+const watchOptions = {
   input,
   output,
   plugins,
@@ -32,4 +38,16 @@ const serverConfig = {
   }
 }
 
-export default serverConfig
+const rollupInputOptions = {
+  input,
+  ...options,
+  plugins
+}
+
+const rollupOutputOptions = output
+
+module.exports = {
+  watchOptions,
+  rollupInputOptions,
+  rollupOutputOptions
+}
