@@ -2,7 +2,15 @@
 
 const path = require('path')
 const fs = require('fs')
-const { isProd, extensions, reactNamedExports, reactDOMNamedExports, reactIsNamedExports } = require('./utils')
+const {
+  isProd,
+  extensions,
+  reactNamedExports,
+  reactDOMNamedExports,
+  reactIsNamedExports,
+  reactRouterNamedExports,
+  reactDOMServerNamedExports
+} = require('./utils')
 
 const replace = require('@rollup/plugin-replace')
 const typescript = require('rollup-plugin-typescript2')
@@ -45,12 +53,10 @@ const commonPlugins = [
     namedExports: {
       react: reactNamedExports,
       'react-dom': reactDOMNamedExports,
-      'react-is': reactIsNamedExports
+      'react-dom/server': reactDOMServerNamedExports,
+      'react-is': reactIsNamedExports,
+      'react-router-dom': reactRouterNamedExports
     }
-  }),
-  resolve({
-    extensions,
-    preferBuiltins: true
   }),
   resolverPlugin(),
   babel({

@@ -1,10 +1,11 @@
 /* eslint-plugin-disable @typescript-eslint */
-
 const { DEFAULT_EXTENSIONS } = require('@babel/core')
 
 const pkg = require('../package.json')
 
 const isProd = process.env.BUILD === 'production'
+
+const builtinModules = Object.keys(process.binding('natives'))
 
 const reactNamedExports = [
   'Children',
@@ -51,6 +52,8 @@ const reactDOMNamedExports = [
   'version'
 ]
 
+const reactDOMServerNamedExports = ['renderToNodeStream']
+
 const reactIsNamedExports = [
   'AsyncMode',
   'ConcurrentMode',
@@ -82,17 +85,39 @@ const reactIsNamedExports = [
   'typeOf'
 ]
 
+const reactRouterNamedExports = [
+  'BrowserRouter',
+  'StaticRouter',
+  'matchPath',
+  'Route',
+  'NavLink',
+  'Link',
+  'Redirect',
+  'Switch'
+]
+
 const extensions = [...DEFAULT_EXTENSIONS, '.jsx', '.ts', '.tsx', '.png']
 
-const commonExternal = ['react', 'react-is', 'styled-components']
+const commonExternal = [
+  ...builtinModules,
+  'react',
+  'react-router-dom',
+  'react-is',
+  'prop-types',
+  'styled-components',
+  'isomorphic-fetch'
+]
 
 module.exports = {
   DEFAULT_EXTENSIONS,
   pkg,
   isProd,
+  builtinModules,
   reactNamedExports,
   reactDOMNamedExports,
+  reactDOMServerNamedExports,
   reactIsNamedExports,
+  reactRouterNamedExports,
   extensions,
   commonExternal
 }

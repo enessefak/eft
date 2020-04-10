@@ -1,10 +1,15 @@
 /* eslint-plugin-disable @typescript-eslint */
 
-const { pkg, isProd, commonExternal } = require('./utils')
-const { typescript, replace, visualizer, uglify, commonPlugins } = require('./plugins')
+const { pkg, isProd, commonExternal, builtinModules, extensions } = require('./utils')
+const { typescript, replace, visualizer, uglify, commonPlugins, resolve } = require('./plugins')
 
 const plugins = [
-  typescript({ check: isProd }),
+  resolve({
+    extensions,
+    preferBuiltins: true,
+    browser: true
+  }),
+  typescript({ check: false }), // TODO (enes sefa) isProd
   ...commonPlugins,
   replace({
     'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
@@ -13,7 +18,7 @@ const plugins = [
   isProd && uglify()
 ]
 
-const input = 'src/entry.tsx'
+const input = 'src/browser/index.tsx'
 
 const output = {
   name: 'client',
@@ -24,16 +29,25 @@ const output = {
     react: 'React',
     'react-dom': 'ReactDOM',
     'prop-types': 'PropTypes',
-    'styled-components': 'styled'
+    'styled-components': 'styled',
+    'react-router-dom': 'ReactRouter',
+    'isomorphic-fetch': 'fetch'
   }
 }
 
-const external = isProd && [...commonExternal, 'react-dom', 'prop-types']
+const external = isProd ? [...commonExternal, 'react-dom'] : [...builtinModules]
 
 const options = {
   cache: true,
   treeshake: false,
-  external
+  external,
+  onwarn(warning, warn) {
+    // skip certain warnings
+    if (warning.code === 'UNRESOLVED_IMPORT' || warning.code === 'EVAL') return
+
+    // Use default for everything else
+    warn(warning)
+  }
 }
 
 const watchOptions = {
