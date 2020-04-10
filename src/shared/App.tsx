@@ -6,7 +6,7 @@ import Navbar from './Navbar'
 import NoMatch from './NoMatch'
 
 const App = props => (
-  <div>
+  <>
     <Navbar />
 
     <Switch>
@@ -15,7 +15,7 @@ const App = props => (
       ))}
       <Route render={props => <NoMatch {...props} />} />
     </Switch>
-  </div>
+  </>
 )
 
 export default App
