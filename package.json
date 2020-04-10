@@ -7,7 +7,7 @@
   "author": "enes.sefa.k <enes.sefa.k@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "yarn run build && node dist/server",
+    "start": "yarn run build && cross-env NODE_ENV=production node dist/server",
     "build": "cross-env BUILD=production node index",
     "dev": "cross-env BUILD=development node index"
   },

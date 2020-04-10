@@ -16,7 +16,7 @@ import routes from '../shared/routes'
 
 const app: Application = express()
 const port = process.env.PORT || 81
-const isProd = process.env.BUILD === 'production'
+const isProd = process.env.NODE_ENV === 'production'
 const publicPath = path.join(__dirname, 'public')
 const server = http.createServer(app)
 
@@ -27,7 +27,7 @@ const paths = routes.map(({ path }) => path)
 let scriptData
 if (!scriptData) scriptData = fs.readFileSync(path.join(publicPath, `${pkg.name}.js`), { encoding: 'utf8' })
 
-!isProd &&
+isProd &&
   app.get(paths, async (req: Request, res: Response, next) => {
     res.setHeader('Content-Type', 'application/json')
 
@@ -76,7 +76,7 @@ if (!scriptData) scriptData = fs.readFileSync(path.join(publicPath, `${pkg.name}
     }
   })
 
-isProd &&
+!isProd &&
   app.get(paths, async (req: Request, res: Response, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8')
 
