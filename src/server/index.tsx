@@ -5,6 +5,7 @@ import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 import reload from 'reload'
 import React from 'react'
+import compression from 'compression'
 import { renderToNodeStream } from 'react-dom/server'
 import { StaticRouter, matchPath } from 'react-router-dom'
 import { ServerStyleSheet } from 'styled-components'
@@ -21,82 +22,85 @@ const publicPath = path.join(__dirname, 'public')
 const server = http.createServer(app)
 
 app.use(cors())
+
+isProd && app.use(compression())
+
 app.use(express.static(publicPath))
+
 const paths = routes.map(({ path }) => path)
 
 let scriptData
-if (!scriptData) scriptData = fs.readFileSync(path.join(publicPath, `${pkg.name}.js`), { encoding: 'utf8' })
 
-isProd &&
-  app.get(paths, async (req: Request, res: Response, next) => {
-    res.setHeader('Content-Type', 'application/json')
+isProd
+  ? app.get(paths, async (req: Request, res: Response, next) => {
+      res.setHeader('Content-Type', 'application/json')
+      if (!scriptData) scriptData = fs.readFileSync(path.join(publicPath, `${pkg.name}.js`), { encoding: 'utf8' })
 
-    const fragment = {
-      name: pkg.name,
-      version: pkg.version,
-      html: '',
-      script: scriptData
-    }
+      const fragment = {
+        name: pkg.name,
+        version: pkg.version,
+        html: '',
+        script: ''
+      }
 
-    const activeRoute = routes.find(route => matchPath(req.url, route)) || {}
+      const activeRoute = routes.find(route => matchPath(req.url, route)) || {}
 
-    const data = (await activeRoute.fetchInitialData) ? activeRoute.fetchInitialData(req.path) : Promise.resolve()
+      const data = (await activeRoute.fetchInitialData) ? activeRoute.fetchInitialData(req.path) : Promise.resolve()
 
-    try {
-      const { context } = data
+      try {
+        const { context } = data
 
-      const sheet = new ServerStyleSheet()
-      const markup = sheet.collectStyles(
-        <StaticRouter location={req.url} context={context}>
-          <App />
-        </StaticRouter>
-      )
+        const sheet = new ServerStyleSheet()
+        const markup = sheet.collectStyles(
+          <StaticRouter location={req.url} context={context}>
+            <App />
+          </StaticRouter>
+        )
 
-      const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
+        const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
 
-      fragment.html += `<script>window.__INITIAL_DATA__ = ${serialize(data)}</script><div id="root">`
-      res.write(JSON.stringify(fragment))
-
-      bodyStream.on('data', chunk => {
-        fragment.html += chunk.toString()
+        fragment.html = `<script>window.__INITIAL_DATA__ = ${serialize(data)}</script><div id="root">`
         res.write(JSON.stringify(fragment))
-      })
 
-      bodyStream.on('end', () => {
-        fragment.html += `</div>`
-        res.write(JSON.stringify(fragment))
-        res.end()
-      })
+        bodyStream.on('data', chunk => {
+          fragment.html = chunk.toString()
+          res.write(JSON.stringify(fragment))
+        })
 
-      bodyStream.on('error', err => {
-        console.error('react render error:', err)
-      })
-    } catch (error) {
-      next(error)
-    }
-  })
+        bodyStream.on('end', () => {
+          fragment.html = `</div>`
+          fragment.script = `<script>${scriptData}</script>`
+          res.write(JSON.stringify(fragment))
+          res.end()
+        })
 
-!isProd &&
-  app.get(paths, async (req: Request, res: Response, next) => {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8')
+        bodyStream.on('error', err => {
+          console.error('react render error:', err)
+        })
+      } catch (error) {
+        next(error)
+      }
+    })
+  : app.get(paths, async (req: Request, res: Response, next) => {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8')
 
-    const activeRoute = routes.find(route => matchPath(req.url, route)) || {}
+      const activeRoute = routes.find(route => matchPath(req.url, route)) || {}
 
-    const data = (await activeRoute.fetchInitialData) ? activeRoute.fetchInitialData(req.path) : Promise.resolve()
+      const data = (await activeRoute.fetchInitialData) ? activeRoute.fetchInitialData(req.path) : Promise.resolve()
 
-    try {
-      const { context } = data
+      try {
+        const { context } = data
 
-      const sheet = new ServerStyleSheet()
-      const markup = sheet.collectStyles(
-        <StaticRouter location={req.url} context={context}>
-          <App />
-        </StaticRouter>
-      )
+        const sheet = new ServerStyleSheet()
+        const markup = sheet.collectStyles(
+          <StaticRouter location={req.url} context={context}>
+            <App />
+          </StaticRouter>
+        )
 
-      const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
+        const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
 
-      res.write(`<!DOCTYPE html>
+        res.write(`<!DOCTYPE html>
       <html>
         <head>
           <title>${pkg.name} v${pkg.version}</title>
@@ -105,24 +109,26 @@ isProd &&
         <body>
           <div id="root">`)
 
-      bodyStream.on('data', chunk => res.write(chunk))
+        bodyStream.on('data', chunk => res.write(chunk))
 
-      bodyStream.on('end', () => {
-        res.write(`</div>
+        bodyStream.on('end', () => {
+          res.write(`</div>
           <script src="/reload/reload.js"></script>
           <script type="text/javascript" src="/${pkg.name}.js"></script>
         </body>
       </html>`)
-        res.end()
-      })
+          res.end()
+        })
 
-      bodyStream.on('error', err => {
-        console.error('react render error:', err)
-      })
-    } catch (error) {
-      next(error)
-    }
-  })
+        bodyStream.on('error', err => {
+          console.error('react render error:', err)
+        })
+      } catch (error) {
+        next(error)
+      }
+    })
+
+app.get('*', (req: Request, res: Response) => res.send(''))
 
 const runHttpServer = async (): Promise => {
   try {
