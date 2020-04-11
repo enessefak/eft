@@ -101,6 +101,7 @@ const extensions = [...DEFAULT_EXTENSIONS, '.jsx', '.ts', '.tsx', '.png']
 const commonExternal = [
   ...builtinModules,
   'react',
+  'react-router',
   'react-router-dom',
   'react-is',
   'prop-types',

@@ -30,7 +30,8 @@ const output = {
     'react-dom': 'ReactDOM',
     'prop-types': 'PropTypes',
     'styled-components': 'styled',
-    'react-router-dom': 'ReactRouter',
+    'react-router': 'ReactRouter',
+    'react-router-dom': 'ReactRouterDOM',
     'isomorphic-fetch': 'fetch'
   }
 }
