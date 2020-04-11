@@ -69,7 +69,7 @@ const commonPlugins = [
   }),
   isProd &&
     progress({
-      clearLine: false
+      clearLine: true
     }),
   isProd && filesize()
 ]
