@@ -1,4 +1,3 @@
-import fs from 'fs'
 import path from 'path'
 import http from 'http'
 import express, { Application, Request, Response } from 'express'
@@ -29,47 +28,44 @@ app.use(express.static(publicPath))
 
 const paths = routes.map(({ path }) => path)
 
-let scriptData
-
 isProd
   ? app.get(paths, async (req: Request, res: Response, next) => {
       res.setHeader('Content-Type', 'application/json')
-      if (!scriptData) scriptData = fs.readFileSync(path.join(publicPath, `${pkg.name}.js`), { encoding: 'utf8' })
 
       const fragment = {
         name: pkg.name,
         version: pkg.version,
-        html: '',
-        script: ''
+        html: ''
       }
 
       const activeRoute = routes.find(route => matchPath(req.url, route)) || {}
 
-      const data = (await activeRoute.fetchInitialData) ? activeRoute.fetchInitialData(req.path) : Promise.resolve()
+      const data = activeRoute.fetchInitialData
+        ? await activeRoute.fetchInitialData(req.path)
+        : await Promise.resolve({})
 
       try {
-        const { context } = data
-
         const sheet = new ServerStyleSheet()
         const markup = sheet.collectStyles(
-          <StaticRouter location={req.url} context={context}>
+          <StaticRouter location={req.url} context={data.context && data.context}>
             <App />
           </StaticRouter>
         )
 
         const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
 
-        fragment.html = `<script>window.__INITIAL_DATA__ = ${serialize(data)}</script><div id="root">`
+        fragment.html = `<script>window.__INITIAL_DATA__ = ${serialize(data)}</script><div>`
         res.write(JSON.stringify(fragment))
 
         bodyStream.on('data', chunk => {
-          fragment.html = chunk.toString()
+          fragment.html = chunk
           res.write(JSON.stringify(fragment))
         })
 
         bodyStream.on('end', () => {
           fragment.html = `</div>`
-          fragment.script = `<script>${scriptData}</script>`
+          fragment.script = `${pkg.name}.js`
+
           res.write(JSON.stringify(fragment))
           res.end()
         })
@@ -86,14 +82,16 @@ isProd
 
       const activeRoute = routes.find(route => matchPath(req.url, route)) || {}
 
-      const data = (await activeRoute.fetchInitialData) ? activeRoute.fetchInitialData(req.path) : Promise.resolve()
+      const data = activeRoute.fetchInitialData
+        ? await activeRoute.fetchInitialData(req.path)
+        : await Promise.resolve({})
 
       try {
         const { context } = data
 
         const sheet = new ServerStyleSheet()
         const markup = sheet.collectStyles(
-          <StaticRouter location={req.url} context={context}>
+          <StaticRouter location={req.url} context={data.context}>
             <App />
           </StaticRouter>
         )
@@ -114,7 +112,7 @@ isProd
         bodyStream.on('end', () => {
           res.write(`</div>
           <script src="/reload/reload.js"></script>
-          <script type="text/javascript" src="/${pkg.name}.js"></script>
+          <script src="/${pkg.name}.js"></script>
         </body>
       </html>`)
           res.end()
