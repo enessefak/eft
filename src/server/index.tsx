@@ -128,15 +128,18 @@ isProd
 
 app.get('*', (req: Request, res: Response) => res.send(''))
 
-const runHttpServer = async (): Promise => {
+const runServer = (): void =>
+  server.listen(port, () => {
+    console.log(`Server is listening on port: ${port}`)
+  })
+
+const runDevelopmentServer = async (): Promise => {
   try {
     await reload(app)
-    server.listen(port, () => {
-      console.log(`Server is listening on port: ${port}`)
-    })
+    runServer()
   } catch (err) {
     console.error('Reload could not start, could not start server/sample app', err)
   }
 }
 
-runHttpServer()
+isProd ? runServer() : runDevelopmentServer()
