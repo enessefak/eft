@@ -1,6 +1,6 @@
 module.exports = {
   parser: "@typescript-eslint/parser", // Specifies the ESLint parser
-  plugins: ["disable"],
+  plugins: ["disable", "react-hooks"],
   processor: "disable/disable",
   extends: [
     "plugin:react/recommended", // Uses the recommended rules from @eslint-plugin-react
@@ -16,6 +16,8 @@ module.exports = {
     },
   },
   rules: {
+    "react-hooks/rules-of-hooks": 'error',
+    "react-hooks/exhaustive-deps": 'warn' // <--- THIS IS THE NEW RULE
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
   },
