@@ -8,13 +8,8 @@ import gql from 'graphql-tag'
 
 import App from '../shared/App'
 
-const userSettings = {
-  appBarColorSetting: {
-    id: 1,
-    name: 'App Bar Color',
-    setting: 'primary',
-    __typename: 'AppBarColorSetting'
-  }
+const counter = {
+  count: 0
 }
 
 const cache = new InMemoryCache({
@@ -35,12 +30,12 @@ const typeDefs = gql`
 `
 
 cache.writeData({
-  userSettings
+  data: counter
 })
 
 const resolvers = {
   Query: {
-    counter: () => userSettings.appBarColorSetting
+    counter: () => counter
   },
   Mutation: {
     incrementAction: (_, { count }) => {
@@ -53,7 +48,6 @@ const resolvers = {
 }
 
 const client = new ApolloClient({
-  ssrMode: true,
   cache,
   typeDefs,
   resolvers,

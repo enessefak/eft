@@ -4,18 +4,16 @@ import gql from 'graphql-tag'
 
 import Counter from './components/counter/counterView'
 
-const APP_BAR_COLOR_SETTING_QUERY = gql`
-  query appBarColorSetting {
-    appBarColorSetting @client {
-      id @client
-      name @client
-      setting @client
+const COUNTER_QUERY = gql`
+  query counter {
+    counter @client {
+      count @client
     }
   }
 `
 
 const Home = () => {
-  const { loading, data } = useQuery(APP_BAR_COLOR_SETTING_QUERY)
+  const { loading, data } = useQuery(COUNTER_QUERY)
 
   if (loading) return <h2>Loading...</h2>
 

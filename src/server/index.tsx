@@ -8,6 +8,7 @@ import compression from 'compression'
 import { renderToNodeStream } from 'react-dom/server'
 import { StaticRouter, matchPath } from 'react-router-dom'
 import { ServerStyleSheet } from 'styled-components'
+import { getDataFromTree } from '@apollo/react-ssr'
 import { ApolloProvider } from '@apollo/react-common'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
@@ -32,35 +33,44 @@ app.use(express.static(publicPath))
 
 const paths = routes.map(({ path }) => path)
 
-const typeDefs = gql`
-  type AppBarColorSetting {
-    id: Int!
-    name: String!
-    setting: String!
-  }
-  type Query {
-    appBarColorSetting: AppBarColorSetting!
-  }
-  type Mutation {
-    updateAppBarColorSetting(setting: String!): AppBarColorSetting!
-  }
-`
-
-const resolvers = {
-  Query: {
-    appBarColorSetting: () => userSettings.appBarColorSetting
-  },
-  Mutation: {
-    updateAppBarColorSetting: (_, { setting }) => {
-      userSettings.appBarColorSetting.setting = setting
-      return userSettings.appBarColorSetting
-    }
-  }
+const counter = {
+  count: 0
 }
 
 const cache = new InMemoryCache({
   freezeResults: true
 })
+
+const typeDefs = gql`
+  type Counter {
+    count: Number
+  }
+  type Query {
+    counter: Counter
+  }
+  type Mutation {
+    incrementAction(count: Number!): Counter!
+    decrementAction(count: Number!): Counter!
+  }
+`
+
+cache.writeData({
+  data: counter
+})
+
+const resolvers = {
+  Query: {
+    counter: () => counter
+  },
+  Mutation: {
+    incrementAction: (_, { count }) => {
+      return count + 1
+    },
+    decrementAction: (_, { count }) => {
+      return count - 1
+    }
+  }
+}
 
 const client = new ApolloClient({
   ssrMode: true,
@@ -68,12 +78,6 @@ const client = new ApolloClient({
   typeDefs,
   resolvers,
   assumeImmutableResults: true
-})
-
-cache.writeData({
-  data: {
-    someField: 'some value'
-  }
 })
 
 isProd
@@ -145,6 +149,13 @@ isProd
             </StaticRouter>
           </ApolloProvider>
         )
+
+        const content = await getDataFromTree({
+          markup,
+          renderFunction: renderToNodeStream
+        })
+
+        console.log('countent', content)
 
         const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
 
