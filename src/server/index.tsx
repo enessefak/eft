@@ -8,6 +8,10 @@ import compression from 'compression'
 import { renderToNodeStream } from 'react-dom/server'
 import { StaticRouter, matchPath } from 'react-router-dom'
 import { ServerStyleSheet } from 'styled-components'
+import { ApolloProvider } from '@apollo/react-common'
+import { ApolloClient } from 'apollo-client'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import gql from 'graphql-tag'
 import serialize from 'serialize-javascript'
 
 import pkg from '../../package.json'
@@ -27,6 +31,50 @@ isProd && app.use(compression())
 app.use(express.static(publicPath))
 
 const paths = routes.map(({ path }) => path)
+
+const typeDefs = gql`
+  type AppBarColorSetting {
+    id: Int!
+    name: String!
+    setting: String!
+  }
+  type Query {
+    appBarColorSetting: AppBarColorSetting!
+  }
+  type Mutation {
+    updateAppBarColorSetting(setting: String!): AppBarColorSetting!
+  }
+`
+
+const resolvers = {
+  Query: {
+    appBarColorSetting: () => userSettings.appBarColorSetting
+  },
+  Mutation: {
+    updateAppBarColorSetting: (_, { setting }) => {
+      userSettings.appBarColorSetting.setting = setting
+      return userSettings.appBarColorSetting
+    }
+  }
+}
+
+const cache = new InMemoryCache({
+  freezeResults: true
+})
+
+const client = new ApolloClient({
+  ssrMode: true,
+  cache,
+  typeDefs,
+  resolvers,
+  assumeImmutableResults: true
+})
+
+cache.writeData({
+  data: {
+    someField: 'some value'
+  }
+})
 
 isProd
   ? app.get(paths, async (req: Request, res: Response, next) => {
@@ -91,9 +139,11 @@ isProd
 
         const sheet = new ServerStyleSheet()
         const markup = sheet.collectStyles(
-          <StaticRouter location={req.url} context={data.context}>
-            <App />
-          </StaticRouter>
+          <ApolloProvider client={client}>
+            <StaticRouter location={req.url} context={data.context}>
+              <App />
+            </StaticRouter>
+          </ApolloProvider>
         )
 
         const bodyStream = sheet.interleaveWithNodeStream(renderToNodeStream(markup))
