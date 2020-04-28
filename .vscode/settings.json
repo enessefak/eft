@@ -6,5 +6,6 @@
   "debug.node.autoAttach": "on",
   "npm.enableScriptExplorer": true,
   "npm.packageManager": "yarn",
-  "eslint.packageManager": "yarn"
+  "eslint.packageManager": "yarn",
+  "git.ignoreLimitWarning": true
 }
