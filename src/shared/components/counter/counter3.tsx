@@ -1,5 +1,5 @@
 import React from 'react'
-import useCounter from './counterViewModel.ts'
+import useCounter from './useCounter'
 
 const Counter = (props): React.FC => {
   const { decrementAction, incrementAction, count } = useCounter(props)

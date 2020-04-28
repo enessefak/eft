@@ -2,12 +2,12 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import routes from './routes'
-import Navbar from './Navbar'
-import NoMatch from './NoMatch'
+// import Navbar from './Navbar'
+import NoMatch from './pages/NoMatch'
 
 const App = props => (
   <>
-    <Navbar />
+    {/* <Navbar /> */}
 
     <Switch>
       {routes.map(({ path, exact, component: Component, ...rest }) => (
