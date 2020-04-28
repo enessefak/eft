@@ -29,11 +29,7 @@ const build = async () => {
   await Promise.all([clientSideBuild(), serverBuild()])
 }
 
-const watch = async () => {
-  await rimraf.sync('dist')
-
-  const watcher = rollup.watch([serverBundler.watchOptions, clientBundler.watchOptions])
-
+const watcherLog = watcher => {
   try {
     watcher.on('event', event => {
       if (event.code === 'ERROR') {
@@ -45,6 +41,15 @@ const watch = async () => {
   } catch (err) {
     console.error(err)
   }
+}
+
+const watch = async () => {
+  await rimraf.sync('dist')
+
+  const clientWatcher = rollup.watch(clientBundler.watchOptions)
+  const serverWatcher = rollup.watch(serverBundler.watchOptions)
+  watcherLog(clientWatcher)
+  watcherLog(serverWatcher)
 }
 
 isProd ? build() : watch()
