@@ -33,7 +33,9 @@ const output = {
     'react-router': 'ReactRouter',
     'react-router-dom': 'ReactRouterDOM',
     'isomorphic-fetch': 'fetch'
-  }
+  },
+  compact: true,
+  sourcemap: !isProd
 }
 
 const external = isProd ? [...commonExternal, 'react-dom'] : [...builtinModules]
