@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
@@ -23,6 +23,35 @@
       "./src/types",
       "./node_modules/@types"
     ],
+    "paths": {
+      "@atoms/*": [
+        "./src/shared/atoms/*"
+      ],
+      "@molecules/*": [
+        "./src/shared/molecules/*"
+      ],
+      "@organisms/*": [
+        "./src/shared/organisms/*"
+      ],
+      "@templates/*": [
+        "./src/shared/templates/*"
+      ],
+      "@pages/*": [
+        "./src/shared/pages/*"
+      ],
+      "@constants/*": [
+        "./src/shared/constants/*"
+      ],
+      "@utils/*": [
+        "./src/shared/utils/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
+      ]
+    },
     "plugins": [
       {
         "transform": "typescript-plugin-styled-components",

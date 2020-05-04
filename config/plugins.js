@@ -23,6 +23,7 @@ const progress = require('rollup-plugin-progress')
 const run = require('@rollup/plugin-run')
 const json = require('@rollup/plugin-json')
 const { uglify } = require('rollup-plugin-uglify')
+const alias = require('@rollup/plugin-alias')
 
 const resolverPlugin = () => ({
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -46,6 +47,19 @@ const resolverPlugin = () => ({
 })
 
 const commonPlugins = [
+  alias({
+    entries: [
+      { find: '@atoms', replacement: path.resolve(__dirname, '../src/shared/atoms') },
+      { find: '@molecules', replacement: path.resolve(__dirname, '../src/shared/molecules') },
+      { find: '@organisms', replacement: path.resolve(__dirname, '../src/shared/organisms') },
+      { find: '@templates', replacement: path.resolve(__dirname, '../src/shared/templates') },
+      { find: '@pages', replacement: path.resolve(__dirname, '../src/shared/pages') },
+      { find: '@constants', replacement: path.resolve(__dirname, '../src/shared/constants') },
+      { find: '@utils', replacement: path.resolve(__dirname, '../src/shared/utils') },
+      { find: '@assets', replacement: path.resolve(__dirname, '../src/assets') },
+      { find: '@types', replacement: path.resolve(__dirname, '../src/types') }
+    ]
+  }),
   commonjs({
     include: 'node_modules/**',
     exclude: ['node_modules/process-es6/**'],
@@ -61,7 +75,8 @@ const commonPlugins = [
   resolverPlugin(),
   babel({
     extensions,
-    exclude: 'node_modules/**'
+    exclude: 'node_modules/**',
+    runtimeHelpers: true
   }),
   json({
     compact: true,

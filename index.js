@@ -33,7 +33,13 @@ const watcherLog = watcher => {
   try {
     watcher.on('event', event => {
       if (event.code === 'ERROR') {
-        console.error(event)
+        const { message, code, url, pos, loc, frame } = event.error
+        console.error(code)
+        console.error(message)
+        console.error(url)
+        console.error(pos)
+        console.error(loc)
+        console.error(frame)
       } else if (event.code === 'BUNDLE_START' || event.code === 'BUNDLE_END') {
         console.info(`${event.code} ${event.input}`)
       }
