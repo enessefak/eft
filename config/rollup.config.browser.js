@@ -1,6 +1,6 @@
 /* eslint-plugin-disable @typescript-eslint */
 
-const { pkg, isProd, commonExternal, builtinModules, extensions } = require('./utils')
+const { pkg, isProd, commonExternal, builtinModules, extensions } = require('./constants')
 const { typescript, replace, visualizer, uglify, commonPlugins, resolve } = require('./plugins')
 
 const plugins = [
@@ -32,13 +32,29 @@ const output = {
     'styled-components': 'styled',
     'react-router': 'ReactRouter',
     'react-router-dom': 'ReactRouterDOM',
-    'isomorphic-fetch': 'fetch'
+    'isomorphic-fetch': 'fetch',
+    'apollo-client': 'apolloClient',
+    '@apollo/react-hooks': 'apolloReactHooks',
+    'apollo-cache-inmemory': 'apolloCacheInmemory',
+    'apollo-link': 'apolloLink',
+    'apollo-link-http': 'apolloLinkHttp',
+    'apollo-link-rest': 'apolloLinkRest'
   },
   compact: true,
   sourcemap: !isProd
 }
 
-const external = isProd ? [...commonExternal, 'react-dom'] : [...builtinModules]
+const external = isProd
+  ? [
+      ...commonExternal,
+      'react-dom',
+      'apollo-client',
+      '@apollo/react-hooks',
+      'apollo-cache-inmemory',
+      'apollo-link',
+      'apollo-link-http'
+    ]
+  : [...builtinModules]
 
 const options = {
   cache: true,

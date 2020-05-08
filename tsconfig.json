@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "baseUrl": ".",
+    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
@@ -10,7 +11,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -20,7 +21,7 @@
     "noEmitOnError": false,
     "jsx": "preserve",
     "typeRoots": [
-      "./src/types",
+      "./src/types/definations.d.ts",
       "./node_modules/@types"
     ],
     "paths": {
@@ -50,6 +51,9 @@
       ],
       "@types/*": [
         "./src/types/*"
+      ],
+      "@pkg": [
+        "./package.json"
       ]
     },
     "plugins": [

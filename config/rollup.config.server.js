@@ -1,6 +1,6 @@
 /* eslint-plugin-disable @typescript-eslint */
 
-const { commonExternal, isProd, extensions } = require('./utils')
+const { commonExternal, isProd, extensions } = require('./constants')
 const { typescript, run, commonPlugins, resolve } = require('./plugins')
 
 const plugins = [
@@ -25,24 +25,37 @@ const input = 'src/server/index.tsx'
 const output = {
   name: 'server',
   dir: 'dist',
-  entryFileNames: 'server.js',
+  entryFileNames: '[name].js',
   format: 'cjs',
-  compact: true,
-  sourcemap: !isProd
+  sourcemap: !isProd,
+  exports: 'named'
 }
 
-const external = [...commonExternal, 'react-dom/server', 'cors', 'reload', 'serialize-javascript']
+const external = [
+  ...commonExternal,
+  'react-dom/server',
+  'cors',
+  'reload',
+  'apollo-client',
+  '@apollo/react-hooks',
+  'apollo-cache-inmemory',
+  'apollo-link',
+  'apollo-link-http',
+  '@apollo/react-common',
+  '@apollo/react-ssr'
+]
 
 const options = {
   cache: true,
-  treeshake: false,
+  treeshake: true,
   external,
+  preserveModules: true,
   onwarn(warning, warn) {
     // skip certain warnings
     if (warning.code === 'UNRESOLVED_IMPORT' || warning.code === 'EVAL') return
 
     // Use default for everything else
-    warn(warning.code)
+    warn(warning)
   }
 }
 

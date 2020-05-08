@@ -1,0 +1,12 @@
+query MyQuery {
+  planets @rest(type: "PlanetPayload", path: "planets/") {
+    count
+    next
+    results @type(name: "Results") {
+      name
+    }
+    typePatchedResults {
+      name
+    }
+  }
+}

@@ -1,37 +1,35 @@
-import Home from './pages/Home'
-import Grid from './pages/Grid'
-
-import Counter1 from './components/counter/counter'
-import Counter2 from './components/counter/counter2'
-import Counter3 from './components/counter/counter3'
-
-import { fetchPopularRepos } from './api'
+import Home from '@pages/Home'
 
 const routes = [
   {
     path: '/',
+    text: 'Ana sayfa',
     exact: true,
     component: Home
   },
   {
-    path: '/counter1',
+    path: '/kadin',
+    text: 'Kadın',
     exact: true,
-    component: Counter1
+    component: Home
   },
   {
-    path: '/counter2',
+    path: '/kadin+giyim',
+    text: 'Kadın',
     exact: true,
-    component: Counter2
+    component: Home
   },
   {
-    path: '/counter3',
+    path: '/erkek',
+    text: 'Erkek',
     exact: true,
-    component: Counter3
+    component: Home
   },
   {
-    path: '/popular/:id',
-    component: Grid,
-    fetchInitialData: (path = '') => fetchPopularRepos(path.split('/').pop())
+    path: '/cocuk',
+    text: 'Çocuk',
+    exact: true,
+    component: Home
   }
 ]
 

@@ -1,6 +1,6 @@
 /* eslint-plugin-disable @typescript-eslint */
 
-const { isProd, pkg } = require('./config/utils')
+const { isProd, pkg } = require('./config/constants')
 process.env.NODE_ENV = isProd ? 'production' : 'development'
 process.env.BABEL_ENV = isProd ? 'production' : 'development'
 
@@ -33,13 +33,7 @@ const watcherLog = watcher => {
   try {
     watcher.on('event', event => {
       if (event.code === 'ERROR') {
-        const { message, code, url, pos, loc, frame } = event.error
-        console.error(code)
-        console.error(message)
-        console.error(url)
-        console.error(pos)
-        console.error(loc)
-        console.error(frame)
+        console.log(event.error)
       } else if (event.code === 'BUNDLE_START' || event.code === 'BUNDLE_END') {
         console.info(`${event.code} ${event.input}`)
       }

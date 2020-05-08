@@ -8,13 +8,14 @@ const {
   reactNamedExports,
   reactDOMNamedExports,
   reactIsNamedExports,
+  apolloServerExpress,
   reactRouterNamedExports,
   reactDOMServerNamedExports
-} = require('./utils')
+} = require('./constants')
 
 const replace = require('@rollup/plugin-replace')
 const typescript = require('rollup-plugin-typescript2')
-const babel = require('rollup-plugin-babel')
+const babel = require('@rollup/plugin-babel').default
 const commonjs = require('@rollup/plugin-commonjs')
 const resolve = require('@rollup/plugin-node-resolve')
 const visualizer = require('rollup-plugin-visualizer')
@@ -25,7 +26,7 @@ const json = require('@rollup/plugin-json')
 const { uglify } = require('rollup-plugin-uglify')
 const alias = require('@rollup/plugin-alias')
 
-const resolverPlugin = () => ({
+const resolverPlugin = {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   resolveId(source, importer) {
     console.log('importer', importer)
@@ -44,7 +45,27 @@ const resolverPlugin = () => ({
       return `export default import.meta.ROLLUP_FILE_URL_${referenceId};`
     }
   }
-})
+}
+
+const sourceMapLoaderPlugin = {
+  load(id) {
+    if (id.endsWith('.esm.js')) {
+      try {
+        const map = JSON.parse(fs.readFileSync(id + '.map'))
+        map.sources.forEach((source, i) => {
+          map.sources[i] = path.normalize(path.join(id, source))
+        })
+        return {
+          code: fs.readFileSync(id, 'utf8'),
+          map: map
+        }
+      } catch (e) {
+        console.log('failed to find source map for ' + id)
+      }
+    }
+    return null
+  }
+}
 
 const commonPlugins = [
   alias({
@@ -57,26 +78,29 @@ const commonPlugins = [
       { find: '@constants', replacement: path.resolve(__dirname, '../src/shared/constants') },
       { find: '@utils', replacement: path.resolve(__dirname, '../src/shared/utils') },
       { find: '@assets', replacement: path.resolve(__dirname, '../src/assets') },
-      { find: '@types', replacement: path.resolve(__dirname, '../src/types') }
+      { find: '@types', replacement: path.resolve(__dirname, '../src/types') },
+      { find: '@pkg', replacement: path.resolve(__dirname, '../package.json') }
     ]
   }),
   commonjs({
     include: 'node_modules/**',
-    exclude: ['node_modules/process-es6/**'],
+    exclude: ['node_modules/process-es6/**', 'node_modules/symbol-observable/es/*.js'],
     extensions,
     namedExports: {
       react: reactNamedExports,
       'react-dom': reactDOMNamedExports,
       'react-dom/server': reactDOMServerNamedExports,
       'react-is': reactIsNamedExports,
-      'react-router-dom': reactRouterNamedExports
+      'react-router-dom': reactRouterNamedExports,
+      'apollo-link-rest': ['RestLink']
     }
   }),
-  resolverPlugin(),
+  resolverPlugin,
+  sourceMapLoaderPlugin,
   babel({
     extensions,
     exclude: 'node_modules/**',
-    runtimeHelpers: true
+    babelHelpers: 'bundled'
   }),
   json({
     compact: true,
