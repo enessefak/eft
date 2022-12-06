@@ -33,7 +33,7 @@
     "graphql-anywhere": "^4.2.6",
     "graphql-tag": "^2.10.3",
     "isomorphic-fetch": "^2.2.1",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-i18next": "^11.4.0",
